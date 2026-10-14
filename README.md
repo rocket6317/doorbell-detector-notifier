@@ -122,8 +122,33 @@ Home recordings and credentials are intentionally not included. The detector
 is an additional alert path; keep the existing doorbell operational while assessing
 recognition in your own home.
 
-## Next step
+## Optional link when tapping an alert
 
-Add a configurable link or action to open a camera app from an ntfy alert,
-with live video and two-way communication handled by that camera app.
-Camera-link support is not yet implemented.
+No camera or camera app is required. By default the detector sends a plain
+doorbell notification. The optional `notification_click` setting adds ntfy's
+`Click` header. Leave it empty to keep the default behaviour. Only set a link after checking
+that your phone opens it as intended. URLs with spaces must be percent-encoded.
+
+On iPhone, an Apple Shortcuts link can launch a shortcut containing an
+**Open App** action for your chosen app. For example, name the shortcut
+**Open Camera**, run it once manually to confirm it opens your app, then set:
+
+```json
+"notification_click": "shortcuts://run-shortcut?name=Open%20Camera"
+```
+
+Restart the detector after changing its config, and send `python3 detector.py
+test-notify` to check tapping a real notification. The phone may need to be
+unlocked. Camera selection, video, and two-way audio are handled inside the camera
+app; this link does not select a particular camera or start talking automatically.
+
+References: [ntfy click actions](https://docs.ntfy.sh/publish/#click-action) and
+[Apple Shortcuts URL scheme](https://support.apple.com/en-gb/guide/shortcuts/apd624386f42/ios).
+
+## Optional privacy hardening
+
+The default user service does not store live audio, but microphone access still
+follows your account's permissions. For a shared Linux host, see the optional
+[dedicated-account setup](privacy/README.md). It limits normal microphone access
+to a non-login detector account and adds service restrictions. Root administrators
+can still override Linux permissions. Hardware mute or unplugging disables detection.

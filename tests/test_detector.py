@@ -200,13 +200,14 @@ class NotificationTests(unittest.TestCase):
             expanduser.assert_called_once()
             self.assertEqual(values, {'NTFY_TOPIC': 'doorbell', 'NTFY_PUBLISHER_PASSWORD': 'space # $literal', 'EMPTY': ''})
 
-    def publish(self, env, test=False):
+    def publish(self, env, test=False, click_url=None):
         response = mock.MagicMock()
         response.__enter__.return_value = io.StringIO('{"id":"test-id"}')
         with mock.patch.object(detector, 'load_env', return_value=env), \
                 mock.patch.object(detector.urllib.request, 'urlopen', return_value=response) as urlopen, \
                 contextlib.redirect_stdout(io.StringIO()) as output:
-            detector.publish({'notification_env': 'unused', 'notification_server': 'http://localhost:6839/'}, test=test)
+            detector.publish({'notification_env': 'unused', 'notification_server': 'http://localhost:6839/',
+                              'notification_click': click_url}, test=test)
         request = urlopen.call_args.args[0]
         self.assertEqual(request.full_url, 'http://localhost:6839/doorbell')
         self.assertEqual(request.get_method(), 'POST')
@@ -231,6 +232,27 @@ class NotificationTests(unittest.TestCase):
 
     def test_public_topic_without_auth(self):
         self.assertIsNone(self.publish({'NTFY_TOPIC': 'doorbell'}).get_header('Authorization'))
+
+    def test_shortcuts_click_link_in_live_and_test_messages(self):
+        link = 'shortcuts://run-shortcut?name=Doorbell%20Camera'
+        for test in [False, True]:
+            with self.subTest(test=test):
+                self.assertEqual(self.publish({'NTFY_TOPIC': 'doorbell'}, test=test, click_url=link).get_header('Click'), link)
+
+    def test_unconfigured_click_link_is_omitted(self):
+        for link in [None, '']:
+            with self.subTest(link=link):
+                self.assertIsNone(self.publish({'NTFY_TOPIC': 'doorbell'}, click_url=link).get_header('Click'))
+
+    def test_invalid_click_link_rejected_before_network(self):
+        for link in ['Doorbell Camera', 'shortcuts://run-shortcut?name=Doorbell Camera',
+                     'shortcuts://run-shortcut?name=Cámara', 'https://example.com/\r\nAuthorization: fake', 42]:
+            with self.subTest(link=link), mock.patch.object(detector, 'load_env', return_value={'NTFY_TOPIC': 'doorbell'}), \
+                    mock.patch.object(detector.urllib.request, 'urlopen') as urlopen:
+                with self.assertRaises(ValueError):
+                    detector.publish({'notification_env': 'unused', 'notification_server': 'http://localhost:6839',
+                                      'notification_click': link})
+                urlopen.assert_not_called()
 
     def test_invalid_topic_rejected_before_network(self):
         for topic in ['', 'nested/topic']:

@@ -1,0 +1,4 @@
+# Replace VENDOR_ID and PRODUCT_ID with your microphone's USB identifiers.
+# Install as /etc/udev/rules.d/71-doorbell-microphone.rules after review.
+SUBSYSTEM=="sound", ATTRS{idVendor}=="VENDOR_ID", ATTRS{idProduct}=="PRODUCT_ID", KERNEL=="controlC*", GROUP:="doorbell-detector", MODE:="0660", TAG-="uaccess"
+SUBSYSTEM=="sound", ATTRS{idVendor}=="VENDOR_ID", ATTRS{idProduct}=="PRODUCT_ID", KERNEL=="pcmC*D*c", GROUP:="doorbell-detector", MODE:="0660", TAG-="uaccess"

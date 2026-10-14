@@ -16,6 +16,7 @@ import subprocess
 import sys
 import time
 import urllib.request
+from urllib.parse import urlsplit
 import wave
 
 RATE = 48000
@@ -136,6 +137,11 @@ def load_env(path):
 def publish(config, test=False):
     env = load_env(config['notification_env'])
     headers = {'Title': 'Doorbell test' if test else 'Doorbell', 'Priority': 'default' if test else 'high', 'Tags': 'bell'}
+    click_url = config.get('notification_click')
+    if click_url is not None and click_url != '':
+        if not isinstance(click_url, str) or not click_url.isascii() or any(c.isspace() or ord(c) < 32 for c in click_url) or not urlsplit(click_url).scheme:
+            raise ValueError('notification_click must be an absolute URL with spaces and non-ASCII characters percent-encoded')
+        headers['Click'] = click_url
     if env.get('NTFY_TOKEN'):
         headers['Authorization'] = 'Bearer ' + env['NTFY_TOKEN']
     elif env.get('NTFY_PUBLISHER_USER') and env.get('NTFY_PUBLISHER_PASSWORD'):

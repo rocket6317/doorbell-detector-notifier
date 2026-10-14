@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.1.0] - 2026-10-14
+
+### Added
+
+- Optionally open a user-selected app or website when tapping a doorbell alert.
+- Keep link support disabled by default; no camera is needed for doorbell notifications.
+- Provide generic dedicated-account service and microphone-permission templates.
+- Test optional links and reject malformed URLs before sending notifications.
+
 ## [1.0.0.0] - 2026-10-14
 
 ### Added
