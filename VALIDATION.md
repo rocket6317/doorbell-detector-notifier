@@ -43,3 +43,26 @@ private captures named `training.wav`, `test.wav`, `fans.wav`, and `ambient.wav`
 with the original timing. It is not a general validator for arbitrary recordings;
 use `detector.py replay` and your own expected event times when calibrating a new
 installation. The automated CI tests do not require these private recordings.
+
+## Camera-app link validation
+
+Optional `notification_click` support passed all 28 automated tests. The
+deployment candidate also passed nine notification tests. A real ntfy test
+message contained the configured Apple Shortcuts URL, and the user confirmed
+that tapping it opened the chosen camera app on the iPhone. The existing recognition profile
+was unchanged. Specific-camera selection and two-way audio remain inside the camera app;
+neither is started automatically by the app-launch link.
+
+## Optional account isolation
+
+The dedicated-account setup was applied to the original Linux deployment.
+The detector's root-managed service is enabled and captures audio as its own
+non-login account, with zero automatic restarts at verification. Normal user
+access to the microphone and private server recordings was denied. Service
+properties confirmed read-only system files, hidden home directories, restricted
+devices, no privilege escalation, and network access limited to localhost.
+
+Physical ringing after that migration and actual reboot/unplug persistence have
+not yet been confirmed. The public hardening files are optional manual templates,
+not a universal installer. Raw recordings previously copied to other machines or
+backups need separate protection. These controls do not restrict root administrators.

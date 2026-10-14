@@ -1,4 +1,5 @@
 {
   "notification_server": "http://127.0.0.1:6839",
-  "notification_env": "~/.config/doorbell-detector/notifier.env"
+  "notification_env": "~/.config/doorbell-detector/notifier.env",
+  "notification_click": ""
 }

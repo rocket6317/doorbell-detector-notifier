@@ -1,0 +1,40 @@
+[Unit]
+Description=Private microphone doorbell detector
+After=network.target
+StartLimitIntervalSec=300
+StartLimitBurst=2
+
+[Service]
+Type=simple
+User=doorbell-detector
+Group=doorbell-detector
+WorkingDirectory=/opt/doorbell-detector
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStart=/usr/bin/python3 -u /opt/doorbell-detector/detector.py --config /etc/doorbell-detector/config.json live --notify
+Restart=on-failure
+RestartSec=15
+TimeoutStopSec=10
+UMask=0077
+NoNewPrivileges=true
+CapabilityBoundingSet=
+AmbientCapabilities=
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadOnlyPaths=/tmp /var/tmp
+InaccessiblePaths=/dev/shm
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictRealtime=true
+RestrictNamespaces=true
+LockPersonality=true
+DevicePolicy=closed
+DeviceAllow=char-alsa rw
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+IPAddressDeny=any
+IPAddressAllow=localhost
+
+[Install]
+WantedBy=multi-user.target

@@ -20,6 +20,8 @@ tones, incomplete prefixes, and reverse ordering. Audio tests verify a known ton
 PCM decoding, format rejection, and complete WAV frame handling. Mocked notification
 tests cover environment parsing, request destination, authentication precedence,
 timeouts, test messages, invalid topics, and sanitized failure logging.
+Optional link tests check both test and normal notifications, omission when
+unconfigured, and rejection of malformed links before a network request.
 Training tests verify timestamp and quiet-interval bounds, threshold validation,
 rejection of empty or nontonal templates, preservation of an existing output on
 failed training, and successful creation of an ordered three-note profile.
