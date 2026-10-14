@@ -1,0 +1,17 @@
+[Unit]
+Description=USB microphone doorbell melody detector
+StartLimitIntervalSec=300
+StartLimitBurst=2
+
+[Service]
+Type=simple
+WorkingDirectory=%h/doorbell-detector
+ExecStart=/usr/bin/python3 -u %h/doorbell-detector/detector.py live --notify
+Restart=on-failure
+RestartSec=15
+TimeoutStopSec=10
+NoNewPrivileges=true
+UMask=0077
+
+[Install]
+WantedBy=default.target
